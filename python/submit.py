@@ -48,7 +48,6 @@ def submit(partId):
         print '== %s' % string.strip()
 
 
-
 def promptPart():
     """Prompt the user for which part to submit."""
     print('== Select which part(s) to submit: ' + homework_id())
@@ -84,6 +83,7 @@ def sources():
              [ 'NaiveBayes.py']
            ]
     return srcs
+
 
 def isValidPartId(partId):
     """Returns true if partId references a valid part."""
@@ -128,7 +128,6 @@ def getChallenge(email, partId):
     return (splits[2], splits[4], splits[6], splits[8])
 
 
-
 def challengeResponse(email, passwd, challenge):
     sha1 = hashlib.sha1()
     sha1.update("".join([challenge, passwd])) # hash the first elements
@@ -139,7 +138,6 @@ def challengeResponse(email, passwd, challenge):
     return strAnswer
 
 
-
 def challenge_url():
     """Returns the challenge url."""
     return 'https://www.coursera.org/nlp/assignment/challenge'
@@ -148,6 +146,7 @@ def challenge_url():
 def submit_url():
     """Returns the submission url."""
     return 'https://www.coursera.org/nlp/assignment/submit'
+
 
 def submitSolution(email_address, ch_resp, part, output, source, state, ch_aux):
     """Submits a solution to the server. Returns (result, string)."""
@@ -176,6 +175,7 @@ def submitSolution(email_address, ch_resp, part, output, source, state, ch_aux):
     result = 0
     return result, string
 
+
 def source(partId):
     """Reads in the source files for a given partId."""
     src = ''
@@ -194,9 +194,9 @@ def source(partId):
 
 from NaiveBayes import NaiveBayes
 
-
 # want: output pos\nneg\npos...
 # ch_aux: weird ass data.
+
 
 def buildTestCorpus(ch_aux):
     """takes doc1\n###\ndoc2\n###... and makes list of documents.
