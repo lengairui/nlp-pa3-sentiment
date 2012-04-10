@@ -43,6 +43,8 @@ class NaiveBayes:
         self.prior_count = {'pos': 0, 'neg': 0}
         self.doc_count = 0
         self.term_count = {'pos': defaultdict(int), 'neg': defaultdict(int)}
+        self.term_set = set()
+        self.class_terms = {'pos': 0, 'neg': 0}
 
     #############################################################################
     # TODO TODO TODO TODO TODO
@@ -52,10 +54,10 @@ class NaiveBayes:
         classification.  """
         score = {'pos': 0.0, 'neg': 0.0}
         for klass in 'pos', 'neg':
+            term_total = self.class_terms[klass] + len(self.term_set)
             score[klass] += math.log(self.prior_count[klass]) - math.log(self.doc_count)
-            term_totals = sum(self.term_count[klass][t] + 1 for t in self.term_count[klass])
             for word in words:
-                score[klass] += math.log(self.term_count[klass][word] + 1) - math.log(term_totals)
+                score[klass] += math.log(self.term_count[klass][word] + 1) - math.log(term_total)
         return 'pos' if score['pos'] >= score['neg'] else 'neg'
 
     def addExample(self, klass, words):
@@ -70,7 +72,12 @@ class NaiveBayes:
         self.doc_count += 1
         self.prior_count[klass] += 1
         for word in words:
+            # emulate defaultdict(int), but prevent spurious 0-counts in evaluation
+            if word not in self.term_count[klass]:
+                self.term_count[klass][word] = 0
             self.term_count[klass][word] += 1
+            self.class_terms[klass] += 1
+            self.term_set.add(word)
 
     # TODO TODO TODO TODO TODO
     #############################################################################
