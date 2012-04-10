@@ -16,6 +16,7 @@ import sys
 import getopt
 import os
 import math
+from collections import defaultdict
 
 
 class NaiveBayes:
@@ -39,6 +40,9 @@ class NaiveBayes:
         self.FILTER_STOP_WORDS = False
         self.stopList = set(self.readFile('../data/english.stop'))
         self.numFolds = 10
+        self.prior_count = {'pos': 0, 'neg': 0}
+        self.doc_count = 0
+        self.term_count = {'pos': defaultdict(int), 'neg': defaultdict(int)}
 
     #############################################################################
     # TODO TODO TODO TODO TODO
@@ -46,7 +50,13 @@ class NaiveBayes:
     def classify(self, words):
         """ TODO 'words' is a list of words to classify. Return 'pos' or 'neg'
         classification.  """
-        return 'pos'
+        score = {'pos': 0.0, 'neg': 0.0}
+        for klass in 'pos', 'neg':
+            score[klass] += math.log(self.prior_count[klass]) - math.log(self.doc_count)
+            term_totals = sum(self.term_count[klass][t] + 1 for t in self.term_count[klass])
+            for word in words:
+                score[klass] += math.log(self.term_count[klass][word] + 1) - math.log(term_totals)
+        return 'pos' if score['pos'] >= score['neg'] else 'neg'
 
     def addExample(self, klass, words):
         """
@@ -57,7 +67,10 @@ class NaiveBayes:
          * in the NaiveBayes class.
          * Returns nothing
         """
-        pass
+        self.doc_count += 1
+        self.prior_count[klass] += 1
+        for word in words:
+            self.term_count[klass][word] += 1
 
     # TODO TODO TODO TODO TODO
     #############################################################################
@@ -102,7 +115,7 @@ class NaiveBayes:
         for example in split.train:
             words = example.words
             if self.FILTER_STOP_WORDS:
-                words =  self.filterStopWords(words)
+                words = self.filterStopWords(words)
             self.addExample(example.klass, words)
 
     def crossValidationSplits(self, trainDir):
@@ -145,8 +158,6 @@ class NaiveBayes:
 
     def buildSplits(self, args):
         """Builds the splits for training/testing"""
-        trainData = []
-        testData = []
         splits = []
         trainDir = args[0]
         if len(args) == 1:
