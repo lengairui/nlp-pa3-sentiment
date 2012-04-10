@@ -1,13 +1,12 @@
 import urllib
 import urllib2
 import hashlib
-import random
 import email
 import email.message
 import email.encoders
 
 
-def submit(partId):   
+def submit(partId):
   print '==\n== [nlp-class] Submitting Solutions | Programming Exercise %s\n=='% homework_id()
   if(not partId):
     partId = promptPart()
@@ -18,17 +17,17 @@ def submit(partId):
     print '!! Expected an integer from 1 to %d.' % (len(partNames) + 1)
     print '!! Submission Cancelled'
     return
-  
+
   (login, password) = loginPrompt()
   if not login:
     print '!! Submission Cancelled'
     return
-  
+
   print '\n== Connecting to nlp-class ... '
 
   # Setup submit list
   if partId == len(partNames) + 1:
-    submitParts = range(1, len(partNames) + 1) 
+    submitParts = range(1, len(partNames) + 1)
   else:
     submitParts = [partId]
 
@@ -59,11 +58,11 @@ def promptPart():
     print '==   %d) %s [ %s ]' % (i, partNames[i - 1], srcFiles[i - 1])
   print '==   %d) All of the above \n==\nEnter your choice [1-%d]: ' % \
           (len(partNames) + 1, len(partNames) + 1)
-  selPart = raw_input('') 
+  selPart = raw_input('')
   partId = int(selPart)
   if not isValidPartId(partId):
     partId = -1
-  return partId 
+  return partId
 
 
 def validParts():
@@ -137,9 +136,9 @@ def challengeResponse(email, passwd, challenge):
   strAnswer = ''
   for i in range(0, len(digest)):
     strAnswer = strAnswer + digest[i]
-  return strAnswer 
-  
-  
+  return strAnswer
+
+
 
 def challenge_url():
   """Returns the challenge url."""
@@ -168,7 +167,7 @@ def submitSolution(email_address, ch_resp, part, output, source, state, ch_aux):
              'challenge_response' : ch_resp, \
              'state' : state \
            }
-  url = submit_url()  
+  url = submit_url()
   data = urllib.urlencode(values)
   req = urllib2.Request(url, data)
   response = urllib2.urlopen(req)
@@ -182,11 +181,11 @@ def source(partId):
   src = ''
   src_files = sources()
   if partId <= len(src_files):
-    flist = src_files[partId - 1]              
+    flist = src_files[partId - 1]
     for fname in flist:
       # open the file, get all lines
       f = open(fname)
-      src = src + f.read() 
+      src = src + f.read()
       f.close()
       src = src + '||||||||'
   return src
@@ -199,7 +198,7 @@ from NaiveBayes import NaiveBayes
 # want: output pos\nneg\npos...
 # ch_aux: weird ass data.
 
-def buildTestCorpus(ch_aux): 
+def buildTestCorpus(ch_aux):
   """takes doc1\n###\ndoc2\n###... and makes list of documents.
      build their NB, train on train, output pos\nneg\npos...
   """
@@ -215,7 +214,7 @@ def buildTestCorpus(ch_aux):
       example.words.append(word)
     testSplit.test.append(example)
   return testSplit
-      
+
 
 def output(partId, ch_aux):
   """Uses the student code to compute the output for test cases."""
@@ -235,7 +234,7 @@ def output(partId, ch_aux):
         gold = split.test[i].klass
         if guess == gold:
           numCorrect += 1
-      accuracy += numCorrect/len(guesses)   
+      accuracy += numCorrect/len(guesses)
     accuracy = accuracy / 10.0
     output = 'accuracy: 1 %f' % accuracy
     return output
@@ -246,7 +245,7 @@ def output(partId, ch_aux):
     guesses = classifier.test(testSplit)
     guesses.insert(0, '2')
     output = '\n'.join(guesses)
-    return output 
+    return output
   elif partId == 3:  # development without stopwords
     splits = classifier.crossValidationSplits(trainDir)
     accuracy = 0.0
@@ -261,7 +260,7 @@ def output(partId, ch_aux):
         gold = split.test[i].klass
         if guess == gold:
           numCorrect += 1
-      accuracy += numCorrect/len(guesses)   
+      accuracy += numCorrect/len(guesses)
     accuracy = accuracy / 10.0
     output = 'accuracy: 3 %f' % accuracy
     return output
